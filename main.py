@@ -22,6 +22,13 @@ async def on_ready() -> None:
 
 @client.event
 async def on_message(message) -> None:
+    if message.author.id == int(os.getenv("OWNERID")) and message.content == '1434_listguilds':
+        x = ''
+        for guild in client.guilds:
+            x += guild.name + '\n'
+        await message.channel.send(x)
+        return
+
     if message.author == client.user:
         return
     words = message.content.split()

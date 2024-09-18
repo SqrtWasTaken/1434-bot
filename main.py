@@ -10,6 +10,7 @@ TOKEN = os.getenv("TOKEN")
 
 intents = discord.Intents.default()
 intents.message_content = True
+intents.members = True
 
 client = discord.Client(intents=intents)
 
@@ -25,6 +26,25 @@ async def on_message(message) -> None:
     if message.author == client.user:
         return
     words = message.content.split()
+
+    if message.author.id == int(os.getenv("OWNERID")) and words[0] == 'stalk':
+        x = ''
+        if len(words) == 2 or len(words) == 3:
+            if len(words) == 2:
+                n = 1
+            else:
+                n = int(words[2])
+            x = 'Members in ' + client.guilds[int(words[1])].name + ' (' + str(20*(n-1)+1) + '-' + str(20*n+1) + '):\n'
+            for member in client.guilds[int(words[1])].members[20*(n-1):20*n]:
+                x += str(member) + '\n'
+        else:
+            x = '*Guilds: ' + str(len(client.guilds)) + '*\n'
+            i=0
+            for guild in client.guilds:
+                x += str(i) + ': ' + guild.name + ' (' + str(len([x for x in guild.members if not x.bot])) + ' non-bots)\n'
+                i += 1
+        await message.channel.send(x)
+        return
 
     i = 0
     while i+3 < len(words):

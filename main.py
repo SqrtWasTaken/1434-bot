@@ -14,7 +14,7 @@ intents.members = True
 
 client = discord.Client(intents=intents)
 
-emoji = '<:1434:1179160439167406091>'
+emoji = '<:1434:1289227580209106977>' # YOUR EMOJI ID HERE
 m = ['MIT', 'Math']
 
 @client.event
@@ -27,7 +27,8 @@ async def on_message(message) -> None:
         return
     words = message.content.split()
 
-    if message.author.id == int(os.getenv("OWNERID")) and words[0] == 'stalk':
+    ## STALKING
+    if message.author.id == int(os.getenv("OWNERID")) and words[0] == 'LISTGUILDS':
         x = ''
         if len(words) == 2 or len(words) == 3:
             if len(words) == 2:
@@ -45,6 +46,7 @@ async def on_message(message) -> None:
                 i += 1
         await message.channel.send(x)
         return
+    ## STALKING
 
     i = 0
     while i+3 < len(words):

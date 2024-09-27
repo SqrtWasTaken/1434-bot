@@ -6,8 +6,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-TOKEN = os.getenv("TOKEN")
-
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
@@ -81,6 +79,6 @@ async def on_message(message) -> None:
             else:
                 break
         else:
-            await message.reply(' '.join(msg))
+            await message.reply(' '.join(msg)[0:2000])
 
-client.run(TOKEN)
+client.run(os.getenv("TOKEN"))

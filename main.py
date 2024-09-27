@@ -13,7 +13,7 @@ intents.message_content = True
 
 client = discord.Client(intents=intents)
 
-emoji = '<:1434:1179160439167406091>'
+emoji = '<:1434:1289227580209106977>'
 m = ['MIT', 'Math']
 
 @client.event

@@ -56,6 +56,7 @@ async def on_message(message) -> None:
             else:
                 break
         else:
-            await message.reply(' '.join(msg))
+            
+            await message.reply(' '.join(msg)[0:2000])
 
 client.run(TOKEN)

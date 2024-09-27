@@ -27,7 +27,7 @@ async def on_message(message) -> None:
         return
     words = message.content.split()
 
-    ## STALKING
+    # Check guilds and members
     if message.author.id == int(os.getenv("OWNERID")) and words[0] == 'LISTGUILDS':
         x = ''
         if len(words) == 2 or len(words) == 3:
@@ -46,8 +46,9 @@ async def on_message(message) -> None:
                 i += 1
         await message.channel.send(x)
         return
-    ## STALKING
+    #
 
+    # 1434 reaction
     i = 0
     while i+3 < len(words):
         if len(words[i]) == 1 and len(words[i+1]) == 4 and len(words[i+2]) == 3 and len(words[i+3]) == 4:
@@ -55,6 +56,7 @@ async def on_message(message) -> None:
             break
         i += 1
     
+    # are you a woman reaction
     i = 0
     while i+3 < len(words):
         if len(words[i]) == 3 and len(words[i+1]) == 3 and len(words[i+2]) == 1 and len(words[i+3]) == 5:
@@ -64,6 +66,7 @@ async def on_message(message) -> None:
             break
         i += 1
     
+    # ritwin hmmt thing
     if len(words) == 1:
         m_count = 0
         msg = []

@@ -42,7 +42,7 @@ async def on_message(message) -> None:
             x = '*Guilds: ' + str(len(client.guilds)) + '*\n'
             i=0
             for guild in client.guilds:
-                x += str(i) + ': ' + guild.name + ' *(' + str(len([x for x in guild.members if not x.bot])) + ' bots, ' + str(len([x for x in guild.members if x.bot])) + ' humans)*\n'
+                x += str(i) + ': ' + guild.name + ' *(' + str(len([x for x in guild.members if not x.bot])) + ' humans, ' + str(len([x for x in guild.members if x.bot])) + ' bots)*\n'
                 i += 1
         await message.channel.send(x)
         return

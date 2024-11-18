@@ -1,5 +1,5 @@
 import os
-
+import random
 import discord
 #from discord.ext import commands
 from dotenv import load_dotenv
@@ -14,6 +14,8 @@ client = discord.Client(intents=intents)
 
 emoji = '<:1434:1289227580209106977>' # YOUR EMOJI ID HERE
 m = ['MIT', 'Math']
+t = ['Tilted', 'Thoroughly', 'Turtle']
+s = ['Students', 'Splash']
 
 @client.event
 async def on_ready() -> None:
@@ -64,8 +66,8 @@ async def on_message(message) -> None:
             break
         i += 1
     
-    # ritwin hmmt thing
     if len(words) == 1:
+        # hmmt
         m_count = 0
         msg = []
         for letter in words[0]:
@@ -80,5 +82,37 @@ async def on_message(message) -> None:
                 break
         else:
             await message.reply(' '.join(msg)[0:2000])
+        # tstst
+        msg = []
+        r = random.random()
+        if r<0.9:
+            first = True
+            for letter in words[0]:
+                if letter.lower() == 't':
+                    if first:
+                        msg.append('Team')
+                        first = False
+                    else:
+                        msg.append('Test')
+                elif letter.lower() == 's':
+                    msg.append('Selection')
+                else:
+                    break
+            else:
+                await message.reply(' '.join(msg)[0:2000])
+        else:
+            t_count = 0
+            s_count = 0
+            for letter in words[0]:
+                if letter.lower() == 't':
+                    msg.append(t[t_count])
+                    t_count = (t_count + 1) % 3
+                elif letter.lower() == 's':
+                    msg.append(s[s_count])
+                    s_count = 1-s_count
+                else:
+                    break
+            else:
+                await message.reply(' '.join(msg)[0:2000])
 
 client.run(os.getenv("TOKEN"))

@@ -6,6 +6,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+TOKEN = os.getenv("TOKEN")
+if TOKEN is None:
+    raise ValueError("Discord bot TOKEN environment variable not set.")
+
+OWNERID_STR = os.getenv("OWNERID")
+if OWNERID_STR is None:
+    raise ValueError("Discord bot OWNERID environment variable not set.")
+OWNERID = int(OWNERID_STR)
+
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
@@ -28,7 +37,7 @@ async def on_message(message) -> None:
     words = message.content.split()
 
     # Check guilds and members
-    if message.author.id == int(os.getenv("OWNERID")) and words[0] == 'LISTGUILDS':
+    if message.author.id == OWNERID and words[0] == 'LISTGUILDS':
         x = ''
         if len(words) == 2 or len(words) == 3:
             if len(words) == 2:
@@ -115,4 +124,4 @@ async def on_message(message) -> None:
             else:
                 await message.reply(' '.join(msg)[0:2000])
 
-client.run(os.getenv("TOKEN"))
+client.run(TOKEN)

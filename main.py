@@ -1,7 +1,7 @@
 import os
 import random
 import discord
-#from discord.ext import commands
+from discord.ext import commands
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -18,21 +18,20 @@ OWNERID = int(OWNERID_STR)
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
-
-client = discord.Client(intents=intents)
+bot = commands.Bot(command_prefix="!", intents=intents)
 
 emoji = '<:1434:1289227580209106977>' # YOUR EMOJI ID HERE
 m = ['MIT', 'Math']
 t = ['Tilted', 'Thoroughly', 'Turtle']
 s = ['Students', 'Splash']
 
-@client.event
+@bot.event
 async def on_ready() -> None:
-    print(f"Logged in as {client.user}")
+    print(f"Logged in as {bot.user}")
 
-@client.event
+@bot.event
 async def on_message(message) -> None:
-    if message.author == client.user:
+    if message.author.bot:
         return
     words = message.content.split()
 
@@ -44,13 +43,13 @@ async def on_message(message) -> None:
                 n = 1
             else:
                 n = int(words[2])
-            x = 'Members in ' + client.guilds[int(words[1])].name + ' (' + str(20*(n-1)+1) + '-' + str(min(20*n, len(client.guilds[int(words[1])].members))) + '):\n'
-            for member in client.guilds[int(words[1])].members[20*(n-1):20*n]:
+            x = 'Members in ' + bot.guilds[int(words[1])].name + ' (' + str(20*(n-1)+1) + '-' + str(min(20*n, len(bot.guilds[int(words[1])].members))) + '):\n'
+            for member in bot.guilds[int(words[1])].members[20*(n-1):20*n]:
                 x += str(member) + '\n'
         else:
-            x = '*Guilds: ' + str(len(client.guilds)) + '*\n'
+            x = '*Guilds: ' + str(len(bot.guilds)) + '*\n'
             i=0
-            for guild in client.guilds:
+            for guild in bot.guilds:
                 x += str(i) + ': ' + guild.name + ' *(' + str(len([x for x in guild.members if not x.bot])) + ' humans, ' + str(len([x for x in guild.members if x.bot])) + ' bots)*\n'
                 i += 1
         await message.channel.send(x)
@@ -124,4 +123,4 @@ async def on_message(message) -> None:
             else:
                 await message.reply(' '.join(msg)[0:2000])
 
-client.run(TOKEN)
+bot.run(TOKEN)

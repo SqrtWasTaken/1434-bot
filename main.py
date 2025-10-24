@@ -27,6 +27,7 @@ s = ['Students', 'Splash']
 
 @bot.event
 async def on_ready() -> None:
+    await bot.tree.sync()
     print(f"Logged in as {bot.user}")
 
 @bot.event
@@ -54,7 +55,6 @@ async def on_message(message) -> None:
                 i += 1
         await message.channel.send(x)
         return
-    #
 
     # 1434 reaction
     i = 0
@@ -122,5 +122,13 @@ async def on_message(message) -> None:
                     break
             else:
                 await message.reply(' '.join(msg)[0:2000])
+
+@bot.tree.command(name="echo", description="If the bot says strange things, this is why.")
+async def echo(interaction: discord.Interaction, message: str) -> None:
+    if interaction.user.id == OWNERID:
+        await interaction.channel.send(message) # type: ignore
+        await interaction.response.send_message(f"Sent!", ephemeral=True)
+    else:
+        await interaction.response.send_message(f"This does not do anything except make you lose the game.", ephemeral=True)
 
 bot.run(TOKEN)

@@ -1,4 +1,7 @@
 import os
+dirname = os.path.dirname(__file__)
+output_file = os.path.join(dirname, 'output.txt')
+
 import random
 import discord
 from discord.ext import commands
@@ -61,6 +64,8 @@ async def on_message(message) -> None:
     while i+3 < len(words):
         if len(words[i]) == 1 and len(words[i+1]) == 4 and len(words[i+2]) == 3 and len(words[i+3]) == 4:
             await message.add_reaction(emoji)
+            with open(output_file, 'a') as f:
+                f.write('\n'+' '.join(words[i:i+4]))
             break
         i += 1
     
@@ -71,6 +76,8 @@ async def on_message(message) -> None:
             await message.add_reaction('🫵')
             await message.add_reaction('👩')
             await message.add_reaction('❓')
+            with open(output_file, 'a') as f:
+                f.write('\n'+' '.join(words[i:i+4]))
             break
         i += 1
     

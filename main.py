@@ -34,9 +34,9 @@ s = ['Students', 'Splash']
 # functions
 async def reaction(name, numbers, emojis, message, words):
     i = 0
-    while i+3 < len(words):
-        for i in range(len(numbers)):
-            if len(words[i]) != numbers[i]:
+    while i+len(numbers)-1 < len(words):
+        for j in range(len(numbers)):
+            if len(words[j]) != numbers[j]:
                 break
         else:
             for e in emojis:

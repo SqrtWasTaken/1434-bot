@@ -1,45 +1,114 @@
 import os
 dirname = os.path.dirname(__file__)
-output_file = os.path.join(dirname, 'output.txt')
+data_file = os.path.join(dirname, '1434_data.db')
 
 import random
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+import sqlite3
+from datetime import datetime
 
+
+# load sensitive info
 load_dotenv()
 
-TOKEN = os.getenv("TOKEN")
-if TOKEN is None:
-    raise ValueError("Discord bot TOKEN environment variable not set.")
+TOKEN_1434 = os.getenv("TOKEN_1434")
+if TOKEN_1434 is None:
+    raise ValueError("Discord bot TOKEN_1434 environment variable not set.")
 
 OWNERID_STR = os.getenv("OWNERID")
 if OWNERID_STR is None:
     raise ValueError("Discord bot OWNERID environment variable not set.")
 OWNERID = int(OWNERID_STR)
 
+
+# variables
+emoji_1434 = '<:1434:1289227580209106977>'
+emoji_33 = '<:33:1420238524313108661>'
+m = ['MIT', 'Math']
+t = ['Tilted', 'Thoroughly', 'Turtle']
+s = ['Students', 'Splash']
+
+
+# functions
+async def reaction(name, numbers, emojis, message, words):
+    i = 0
+    while i+3 < len(words):
+        for i in range(len(numbers)):
+            if len(words[i]) != numbers[i]:
+                break
+        else:
+            for e in emojis:
+                await message.add_reaction(e)
+
+            conn = sqlite3.connect(data_file)
+            cursor = conn.cursor()
+            cursor.execute('INSERT INTO messages (text, reaction_type, timestamp) VALUES (?, ?, ?)',
+                (' '.join(words[i:(i+len(numbers))]), 
+                    name, 
+                    int(datetime.fromisoformat(str(message.created_at)).timestamp())
+                )
+            )
+
+            cursor.execute('SELECT count_'+name+' FROM users WHERE user_id=?', (message.author.id,))
+            row = cursor.fetchone()
+
+            if row is None:
+                cursor.execute('INSERT INTO users (user_id) VALUES (?)', (message.author.id,))
+
+            cursor.execute('UPDATE users SET count_'+name+' = count_'+name+'+1 WHERE user_id=?', (message.author.id,))
+
+            conn.commit()
+            conn.close()
+        i += 1
+
+
+# setup sqlite
+conn = sqlite3.connect(data_file)
+cursor = conn.cursor()
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS messages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        text TEXT,
+        reaction_type TEXT,
+        timestamp INTEGER
+    )
+''')
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        count_1434 INTEGER DEFAULT 0,
+        count_3315 INTEGER DEFAULT 0,
+        count_3345 INTEGER DEFAULT 0
+    )
+''')
+conn.commit()
+conn.close()
+
+
+# bot setup
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 bot = commands.Bot(command_prefix="!", intents=intents)
-
-emoji = '<:1434:1289227580209106977>' # YOUR EMOJI ID HERE
-m = ['MIT', 'Math']
-t = ['Tilted', 'Thoroughly', 'Turtle']
-s = ['Students', 'Splash']
 
 @bot.event
 async def on_ready() -> None:
     await bot.tree.sync()
     print(f"Logged in as {bot.user}")
 
+
+# message events
 @bot.event
 async def on_message(message) -> None:
     if message.author.bot:
         return
     words = message.content.split()
 
-    # Check guilds and members
+
+    # Check guilds and members (just for me)
     if message.author.id == OWNERID and words[0] == 'LISTGUILDS':
         x = ''
         if len(words) == 2 or len(words) == 3:
@@ -59,28 +128,14 @@ async def on_message(message) -> None:
         await message.channel.send(x)
         return
 
-    # 1434 reaction
-    i = 0
-    while i+3 < len(words):
-        if len(words[i]) == 1 and len(words[i+1]) == 4 and len(words[i+2]) == 3 and len(words[i+3]) == 4:
-            await message.add_reaction(emoji)
-            with open(output_file, 'a') as f:
-                f.write('\n'+' '.join(words[i:i+4]))
-            break
-        i += 1
-    
-    # are you a woman reaction
-    i = 0
-    while i+3 < len(words):
-        if len(words[i]) == 3 and len(words[i+1]) == 3 and len(words[i+2]) == 1 and len(words[i+3]) == 5:
-            await message.add_reaction('🫵')
-            await message.add_reaction('👩')
-            await message.add_reaction('❓')
-            with open(output_file, 'a') as f:
-                f.write('\n'+' '.join(words[i:i+4]))
-            break
-        i += 1
-    
+
+    # reactions
+    await reaction('1434', [1,4,3,4], [emoji_1434], message, words)
+    await reaction('3345', [3,3,4,5], [emoji_33], message, words)
+    await reaction('3315', [3,3,1,5], ['🫵', '👩', '❓'], message, words)
+
+
+    # acronym recognition
     if len(words) == 1:
         # hmmt
         m_count = 0
@@ -130,6 +185,8 @@ async def on_message(message) -> None:
             else:
                 await message.reply(' '.join(msg)[0:2000])
 
+
+# dumb echo command
 @bot.tree.command(name="echo", description="If the bot says strange things, this is why.")
 async def echo(interaction: discord.Interaction, message: str) -> None:
     if interaction.user.id == OWNERID:
@@ -138,4 +195,6 @@ async def echo(interaction: discord.Interaction, message: str) -> None:
     else:
         await interaction.response.send_message(f"This does not do anything except make you lose the game.", ephemeral=True)
 
-bot.run(TOKEN)
+
+
+bot.run(TOKEN_1434)

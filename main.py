@@ -4,7 +4,7 @@ data_file = os.path.join(dirname, '1434_data.db')
 
 import random
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from dotenv import load_dotenv
 import sqlite3
 from datetime import datetime
@@ -185,6 +185,14 @@ async def on_message(message) -> None:
             else:
                 await message.reply(' '.join(msg)[0:2000])
 
+
+log_channel = 1486887458997272676
+
+# logging test
+@tasks.loop(minutes=10)
+async def ping():
+    channel = bot.get_channel(log_channel)
+    await channel.send('ping') # type: ignore
 
 # dumb echo command
 @bot.tree.command(name="echo", description="If the bot says strange things, this is why.")

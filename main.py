@@ -30,6 +30,8 @@ m = ['MIT', 'Math']
 t = ['Tilted', 'Thoroughly', 'Turtle']
 s = ['Students', 'Splash']
 
+blacklist_channels = ['977389045967638548', '1063947582335889539', '1486887458997272676']
+
 
 # functions
 async def reaction(name, numbers, emojis, message, words):
@@ -103,7 +105,7 @@ async def on_ready() -> None:
 # message events
 @bot.event
 async def on_message(message) -> None:
-    if message.author.bot:
+    if message.author.bot or (message.channel.id in blacklist_channels):
         return
     words = message.content.split()
 

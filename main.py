@@ -101,6 +101,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 async def on_ready() -> None:
     await bot.tree.sync()
     print(f"Logged in as {bot.user}")
+    ping.start()
 
 
 # message events

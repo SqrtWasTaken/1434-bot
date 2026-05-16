@@ -107,7 +107,7 @@ async def on_ready() -> None:
 # message events
 @bot.event
 async def on_message(message) -> None:
-    print(message.channel.id)
+
     if message.author.bot or (message.channel.id in blacklist_channels):
         return
     words = message.content.split()

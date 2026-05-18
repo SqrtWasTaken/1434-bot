@@ -64,6 +64,9 @@ async def reaction(name, numbers, emojis, message, words):
 
             conn.commit()
             conn.close()
+
+            break # prevents loop from continuing if 1434 found early
+
         i += 1
 
 

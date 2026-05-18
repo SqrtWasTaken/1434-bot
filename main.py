@@ -73,23 +73,27 @@ async def reaction(name, numbers, emojis, message, words):
 # setup sqlite
 conn = sqlite3.connect(data_file)
 cursor = conn.cursor()
-cursor.execute('''
+cursor.executescript('''
     CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         text TEXT,
         reaction_type TEXT,
         timestamp INTEGER
-    )
-''')
-cursor.execute('''
+    );
+
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER,
         count_1434 INTEGER DEFAULT 0,
         count_3315 INTEGER DEFAULT 0,
         count_3345 INTEGER DEFAULT 0
-    )
+    );
+                     
+    CREATE TABLE IF NOT EXISTS timestamps (
+        stamp INTEGER
+    );
 ''')
+
 conn.commit()
 conn.close()
 
@@ -115,26 +119,41 @@ async def on_message(message) -> None:
         return
     words = message.content.split()
 
-
-    # Check guilds and members (just for me)
-    if message.author.id == OWNERID and words[0] == 'LISTGUILDS':
-        x = ''
-        if len(words) == 2 or len(words) == 3:
-            if len(words) == 2:
-                n = 1
+    # owner exclusive commands
+    if message.author.id == OWNERID:
+        if words[0] == 'LISTGUILDS': # check guilds and members
+            x = ''
+            if len(words) == 2 or len(words) == 3:
+                if len(words) == 2:
+                    n = 1
+                else:
+                    n = int(words[2])
+                x = 'Members in ' + bot.guilds[int(words[1])].name + ' (' + str(20*(n-1)+1) + '-' + str(min(20*n, len(bot.guilds[int(words[1])].members))) + '):\n'
+                for member in bot.guilds[int(words[1])].members[20*(n-1):20*n]:
+                    x += str(member) + '\n'
             else:
-                n = int(words[2])
-            x = 'Members in ' + bot.guilds[int(words[1])].name + ' (' + str(20*(n-1)+1) + '-' + str(min(20*n, len(bot.guilds[int(words[1])].members))) + '):\n'
-            for member in bot.guilds[int(words[1])].members[20*(n-1):20*n]:
-                x += str(member) + '\n'
-        else:
-            x = '*Guilds: ' + str(len(bot.guilds)) + '*\n'
-            i=0
-            for guild in bot.guilds:
-                x += str(i) + ': ' + guild.name + ' *(' + str(len([x for x in guild.members if not x.bot])) + ' humans, ' + str(len([x for x in guild.members if x.bot])) + ' bots)*\n'
-                i += 1
-        await message.channel.send(x)
-        return
+                x = '*Guilds: ' + str(len(bot.guilds)) + '*\n'
+                i=0
+                for guild in bot.guilds:
+                    x += str(i) + ': ' + guild.name + ' *(' + str(len([x for x in guild.members if not x.bot])) + ' humans, ' + str(len([x for x in guild.members if x.bot])) + ' bots)*\n'
+                    i += 1
+            await message.channel.send(x)
+            return
+
+        if words[0] == 'RESETDATA':
+            timestamp = int(datetime.fromisoformat(str(message.created_at)).timestamp())
+
+            conn = sqlite3.connect(data_file)
+            cursor = conn.cursor()
+            
+            cursor.execute('DELETE FROM timestamps')
+            cursor.execute('INSERT INTO timestamps (stamp) VALUES (?)', (timestamp,))
+            cursor.execute('DELETE FROM users')
+
+            conn.commit()
+            conn.close()
+
+            await message.channel.send('Data reset. New timestamp: ' + str(timestamp))
 
 
     # reactions
